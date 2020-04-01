@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<link href="../static/css/main.css" th:href="@{/css/main.css}" rel="stylesheet" />
+<title>Wellcome To Admin page</title>
+</head>
+<body>
+	<div th:text="${registrationStatus}"></div>
+
+	<h1>This is the Admin page</h1>
+	
+	<table>
+		<tr>
+			<td>
+				<form method="post" th:action="@{/admin/database/user}">
+					<input type="submit" value="Get User Database">
+				</form>
+			</td>
+			
+			<td>
+				<form method="post" th:action="@{/admin/database/apartment}">
+					<input type="submit" value="Get Movie Database">
+				</form>
+			</td>
+			
+		</tr>
+	</table>
+	
+</body>
+</html>
