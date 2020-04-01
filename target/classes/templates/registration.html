@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Register New Account</title>
+<link href="../static/css/main.css" th:href="@{/css/main.css}" rel="stylesheet" />
+</head>
+<body>
+	<table>
+		<tr><h1>Register a New Account</h1></tr>
+		
+		<form method="post" th:action="@{/validateAccount}" th:object="${user}">
+			<input type="hidden" name="id" th:field="*{id}"> 
+			<input type="hidden" name="accountid" th:field="*{account.id}">
+		
+			<tr>
+				<td class="column">First Name:</td>
+				<td><input type="text" name="firstname" th:field="*{firstname}"></td>
+				<td><div style="color:red" th:text="${error_firstname}"></div></td>
+			</tr>
+			
+			<tr>
+				<td class="column">Last Name:</td>
+				<td><input type="text" name="lastname" th:field="*{lastname}"></td>
+				<td><div style="color:red" th:text="${error_lastname}"></div></td>
+			</tr>
+			
+			<tr>
+				<td  class="column">Age:</td>
+				<td><input type="number" name="age" th:field="*{age}" min="10"></td>
+				<td><div style="color:red" th:text="${error_age}"></div></td>
+			</tr>
+			
+			<tr>
+				<td  class="column">Email:</td>
+				<td><input type="text" name="email" th:field="*{email}"></td>
+				<td><div style="color:red" th:text="${error_email}"></div></td>
+			</tr>
+			
+			<tr>
+				<td  class="column">Username:</td>
+				<td><input type="text" name="username" th:field="*{account.username}"></td>
+				<td><div style="color:red" th:text="${error_username}"></div></td>
+			</tr>
+			
+			<tr>
+				<td class="column">Password:</td>
+				<td><input type="password" name="password" th:field="*{account.password}"></td>
+				<td><div style="color:red" th:text="${error_password}"></div></td>
+			</tr>
+			
+			<tr>
+				<td  class="column">Retype Password:</td>
+				<td><input type="password" name="retypepassword" th:field="*{account.retypepassword}"></td>
+				<td><div style="color:red" th:text="${error_retypepassword}"></div></td>
+			</tr>
+			
+			<tr>
+				<td></td><td><input type="submit" value="Create New Account"></td>
+			</tr>
+			
+			
+		</form>
+		
+	</table>
+	
+	
+</body>
+</html>
+
+<!-- 
+<br>
+		<div style="color: red" th:text="${username}">Username is
+			already in the system, choose another one please</div>
+			
+		<div style="color: red" th:text="${password}">Password does not
+			match</div>
+ -->
+ 

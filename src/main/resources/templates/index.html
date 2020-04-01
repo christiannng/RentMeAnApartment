@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Wellcome To RENT-ME-AN-APARTMENT</title>
+<link href="../static/css/main.css" th:href="@{/css/main.css}" rel="stylesheet" />
+</head>
+<body>
+	<div th:text="${status}" class="error"></div>
+
+	<h1>Wellcome To RENT-ME-AN-APARTMENT</h1>
+	<form method="post" th:action="@{/login}" th:object="${user}">
+		<input type="hidden" name="id" th:field="*{id}">
+		<input type="hidden" name="accountid" th:field="*{account.id}">
+		<table>
+			<tr>
+				<td>Username:</td>
+				<td><input type="text" name="name" th:field="*{account.username}"></td>
+			</tr>
+
+			<tr>
+				<td>Password:</td>
+				<td><input type="password" name="pass" th:field="*{account.password}"></td>
+			</tr>
+
+			<tr>
+				<td><input type="submit" value="Login!">
+				</form></td>
+				<td>
+					<form method="post" th:action="@{/registerNewAccount}">
+						<input type="submit" value="Create New Account">
+					</form>
+				</td>
+				<td>
+					<form method="post" th:action="@{/continueAsGuest}">
+						<input type="submit" value="Continue As Guest">
+					</form>
+				</td>
+
+			</tr>
+		</table>
+</body>
+</html>

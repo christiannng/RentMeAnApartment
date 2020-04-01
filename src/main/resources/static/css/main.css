@@ -1,0 +1,14 @@
+body {
+	background-color: black;
+	color: yellow;
+	font-family: "Courier New", Courier, monospace;
+	
+}
+
+.error {
+	color: red;
+}
+
+.good {
+	color: green;
+}
