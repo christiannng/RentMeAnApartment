@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Wellcome To User Database page</title>
+<link href="../static/css/main.css" th:href="@{/css/main.css}" rel="stylesheet" />
+</head>
+<body>
+	<div th:text="${statusGood}" class="good"></div>
+	<div th:text="${statusBad}" class="error"></div>
+
+	<h1>This is the User Database page</h1>
+	<br>
+	<hr>
+
+	<table th:if="${userList != null and !userList.empty}">
+		<tr>
+			<th>User ID</th>
+			<th>First Name</th>
+			<th>Last Name</th>
+			<th>Age</th>
+			<th>Email</th>
+			<th>Username</th>
+			<th>Password</th>
+			<th>Admin</th>
+		</tr>
+		
+		<tr>
+			<form method="post" th:action="@{/admin/database/user/add}" th:object="${user}">
+			 	<td>
+			 		<!-- <input type="hidden" th:field="*{id}" style="width: 40px;"> -->
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="text" name="firstname" th:value="''" value="*{firstname}">
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="text" name="lastname" th:value="''" value="*{lastname}">
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="number" th:value="10" name="age" value="*{age}" style="width: 40px" min="10">
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="email"  name="email" th:value="''" value="*{email}" >
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="text" name="newUsername">
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="text" name="newPassword" >
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="checkbox" name="newAdmin" >
+			 	</td>
+			 	
+				<td><input type="submit" value="Add"></td>
+			</form>
+		</tr>
+		<tr><hr></tr>
+		<tr th:each="u : ${userList}">
+		
+			<form method="post" th:action="@{/admin/database/user/update}" th:object="${user}">
+				
+			 	<td>
+			 		<input  type="number" th:value="${u.id}" style="width: 40px;" disabled>
+			 	</td>
+			 	
+			 	<input type="hidden" name="id" value="*{id}" th:value="${u.id}">
+			 	
+			 	<td>
+			 		<input type="text" name="firstname" value="*{firstname}" th:value="${u.firstname}">
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="text" name="lastname" value="*{lastname}" th:value="${u.lastname}">
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="number" name="age" value="*{age}" th:value="${u.age}" style="width: 40px" min="10">
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="email" name="email" value="*{email}" th:value="${u.email}">
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="text"  name="updatedUsername" th:value="${u.account.username}">
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="text"  name="updatedPassword" th:value="${u.account.password}">
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="checkbox" name="updatedAdmin" th:checked="${u.account.admin}">
+			 	</td>
+			 	
+				<td><input type="submit" value="Update"></td>
+			</form>
+			
+			<form method="post" th:action="@{/admin/database/user/delete}">
+				<input type="hidden" name="movieId" th:value="${u.id}">
+				<td><input type="submit" value="Delete"></td>
+			</form>
+			
+		</tr>
+	</table>
+
+</body>
+</html>

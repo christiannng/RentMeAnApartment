@@ -1,12 +1,15 @@
 package com.prog39599.controllers;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.prog39599.beans.Account;
 import com.prog39599.beans.User;
@@ -23,24 +26,21 @@ public class HomeController {
 	private AccountRepository accountRepo;
 	private static User currentUser;
 
+	
 	@GetMapping("/")
 	public String index(Model model, @ModelAttribute User user) {
 		currentUser = null;
 		return "index";
-		
-		/*
-		if(currentUser == null) {
-			return "index";
-		} else {
-			if(currentUser.getAccount().isAdmin()) {
-				return "admin";
-			} else {
-				return "homepage";
-			}
-		}*/
-		
-		
 	}
+	
+	/*
+	@GetMapping("/")
+	public String index(Model model, @ModelAttribute User user) {
+		List<User> users = userRepo.findAllByOrderByIdAsc();
+		model.addAttribute("userList", users);
+		
+		return "adminUserDB";
+	}*/
 
 	@GetMapping("/registerNewAccount")
 	public String handleErrorRegister(Model model, @ModelAttribute User user) {
@@ -157,6 +157,179 @@ public class HomeController {
 
 		return "homepage";
 	}
+
+	@GetMapping("/admin/database/user")
+	public String queryAccountDbError(Model model, @ModelAttribute User user) {
+		return "index";
+	}
 	
+	@PostMapping("/admin/database/user")
+	public String queryAccountDb(Model model, @ModelAttribute User user) {
+		if(currentUser == null) {
+			return "index";
+		}
+		
+		if(currentUser.getAccount().isAdmin()) {
+			List<User> users = userRepo.findAllByOrderByIdAsc();
+			model.addAttribute("userList", users);
+			
+			return "adminUserDB";
+		}
+		
+		return "index";
+	}
 	
+	@GetMapping("/admin/database/user/add")
+	public String addUserAdminHandleError(Model model, @ModelAttribute User user) {
+		currentUser = null;
+		return "index";
+	}
+	
+	@PostMapping("/admin/database/user/add")
+	public String addUserAdmin(Model model, @ModelAttribute User user,
+			@RequestParam String newUsername, 
+			@RequestParam String newPassword, 
+			@RequestParam(defaultValue="false") boolean newAdmin) {
+		
+		if(currentUser == null) {
+			return "index";
+		}
+		
+		if(currentUser.getAccount().isAdmin()) {
+			
+			Account accountToAdd = Account.builder().username(newUsername).password(newPassword).admin(newAdmin).build();
+			user.setAccount(accountToAdd);
+			if(!isValidated(user)) {
+				model.addAttribute("statusBad", "Cannot add new user due to validation failure!");
+				List<User> users = userRepo.findAllByOrderByIdAsc();
+				model.addAttribute("userList", users);
+				
+				return "adminUserDB";
+			}
+			
+			user.getAccount().setRetypepassword(user.getAccount().getPassword());
+			user.setId(null);
+			userRepo.save(user);
+			accountRepo.save(user.getAccount());
+			
+			model.addAttribute("statusGood", "Added User Successful!!!");
+			List<User> users = userRepo.findAllByOrderByIdAsc();
+			model.addAttribute("userList", users);
+			
+			return "adminUserDB";
+		}
+		
+		return "index";
+	}
+	
+	@PostMapping("/admin/database/user/update")
+	public String updateUser(Model model, @ModelAttribute User user, 
+			@RequestParam String updatedUsername, 
+			@RequestParam String updatedPassword, 
+			@RequestParam(defaultValue="false") boolean updatedAdmin) {
+		if(currentUser == null) {
+			return "index";
+		}
+		
+		if(currentUser.getAccount().isAdmin()) {
+			Account account = Account.builder().username(updatedUsername).password(updatedPassword).admin(updatedAdmin).build();
+			user.setAccount(account);
+			if(updateUser(user)) {
+				model.addAttribute("statusGood", "Updated User!!!");
+			} else {
+				model.addAttribute("statusBad", "There is nothing to update!!!");
+			}
+			
+			List<User> users = userRepo.findAllByOrderByIdAsc();
+			model.addAttribute("userList", users);
+		
+			return "adminUserDB";
+		}
+		
+		return "index";
+	}
+	
+	@PostMapping("/admin/database/user/delete")
+	public String deleteUser(Model model, @RequestParam Long movieId) {
+		if(currentUser == null) {
+			return "index";
+		}
+		
+		if(currentUser.getAccount().isAdmin()) {
+			
+			Optional<User> userInDB = userRepo.findById(movieId);
+			User userToDelete = userInDB.get();
+			
+			accountRepo.deleteById(userToDelete.getAccount().getId());
+			userRepo.deleteById(movieId);
+			
+			
+			List<User> users = userRepo.findAllByOrderByIdAsc();
+			model.addAttribute("userList", users);
+			model.addAttribute("statusGood", "Deleted The User Successfully!!!");
+		
+			return "adminUserDB";
+		}
+		
+		return "index";
+	}
+	
+	private boolean isValidated(User user) {
+		if(user.getFirstname().isBlank()) return false; 
+		if(user.getLastname().isBlank()) return false;
+		if(!user.getEmail().contains("@")) return false;
+		if(user.getAccount().getUsername().length() < 3) return false;
+		if(user.getAccount().getPassword().length() < 3) return false;
+		
+		return true;
+	}
+	
+	private boolean updateUser(User user) {
+		
+		boolean isAnythingToUpdate = false;
+		Optional<User> userInDB = userRepo.findById(user.getId());
+		User foundUser = userInDB.get();
+		
+		boolean a = user.getFirstname().isBlank();
+		boolean b = foundUser.getFirstname().equals(user.getFirstname()); 
+		
+		if(!user.getFirstname().isBlank() && !foundUser.getFirstname().equals(user.getFirstname())) {
+			foundUser.setFirstname(user.getFirstname());
+			isAnythingToUpdate = true;
+		}
+		
+		if(!user.getLastname().isBlank() && !user.getLastname().equals(foundUser.getLastname())) {
+			foundUser.setLastname(user.getLastname());
+			isAnythingToUpdate = true;
+		}
+		
+		if(user.getEmail().contains("@") && !user.getEmail().equals(foundUser.getEmail())) {
+			foundUser.setEmail(user.getEmail());
+			isAnythingToUpdate = true;
+		}
+		
+		Account foundAccount = foundUser.getAccount();
+		Account account = user.getAccount();
+		if(account.getUsername().length() >= 3 && !account.getUsername().equals(foundAccount.getUsername())) {
+			foundAccount.setUsername(account.getUsername());
+			isAnythingToUpdate = true;
+		}
+		
+		if(account.getPassword().length() >= 3 && !account.getPassword().equals(foundAccount.getPassword())) {
+			foundAccount.setPassword(account.getPassword());
+			isAnythingToUpdate = true;
+		}
+		
+		if(account.isAdmin() != foundAccount.isAdmin()) {
+			foundAccount.setAdmin(account.isAdmin());
+			isAnythingToUpdate = true;
+		}
+		
+		if(isAnythingToUpdate) {
+			accountRepo.save(foundAccount);
+			userRepo.save(foundUser);
+		}
+		
+		return isAnythingToUpdate;
+	}
 }

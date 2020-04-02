@@ -1,6 +1,7 @@
 package com.prog39599.beans;
 
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -38,7 +39,7 @@ public class User {
 	
 	private int age;
 	
-	@OneToOne
+	@OneToOne(cascade = {CascadeType.ALL})
 	@JoinTable(name="USER_ACCOUNT", 
 		joinColumns = @JoinColumn(name="USER_ID"), 
 		inverseJoinColumns = @JoinColumn(name="ACCOUNT_ID"))
