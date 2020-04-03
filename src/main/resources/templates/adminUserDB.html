@@ -12,8 +12,8 @@
 	<h1>This is the User Database page</h1>
 	<br>
 	<hr>
-
-	<table th:if="${userList != null and !userList.empty}">
+	
+	<table>
 		<tr>
 			<th>User ID</th>
 			<th>First Name</th>
@@ -26,44 +26,45 @@
 		</tr>
 		
 		<tr>
-			<form method="post" th:action="@{/admin/database/user/add}" th:object="${user}">
-			 	<td>
-			 		<!-- <input type="hidden" th:field="*{id}" style="width: 40px;"> -->
-			 	</td>
+		<form method="post" th:action="@{/admin/database/user/add}" th:object="${user}">
+			<td>
+				<!-- <input type="hidden" th:field="*{id}" style="width: 40px;"> -->
+			 </td>
+				 	
+			 <td>
+			 	<input type="text" name="firstname" th:value="''" value="*{firstname}">
+			 </td>
+				 	
+			 <td>
+			 	<input type="text" name="lastname" th:value="''" value="*{lastname}">
+			 </td>
+				 	
+			 <td>
+			 	<input type="number" th:value="10" name="age" value="*{age}" style="width: 40px" min="10">
+			 </td>
+				 	
+			 <td>
+				<input type="email"  name="email" th:value="''" value="*{email}" >
+			 </td>
 			 	
-			 	<td>
-			 		<input type="text" name="firstname" th:value="''" value="*{firstname}">
-			 	</td>
-			 	
-			 	<td>
-			 		<input type="text" name="lastname" th:value="''" value="*{lastname}">
-			 	</td>
-			 	
-			 	<td>
-			 		<input type="number" th:value="10" name="age" value="*{age}" style="width: 40px" min="10">
-			 	</td>
-			 	
-			 	<td>
-			 		<input type="email"  name="email" th:value="''" value="*{email}" >
-			 	</td>
-			 	
-			 	<td>
-			 		<input type="text" name="newUsername">
-			 	</td>
-			 	
-			 	<td>
-			 		<input type="text" name="newPassword" >
-			 	</td>
-			 	
-			 	<td>
-			 		<input type="checkbox" name="newAdmin" >
-			 	</td>
-			 	
-				<td><input type="submit" value="Add"></td>
-			</form>
+		 	<td>
+		 		<input type="text" name="newUsername">
+			</td>
+				 	
+			<td>
+				<input type="text" name="newPassword" >
+			</td>
+				 	
+			<td>
+				<input type="checkbox" name="newAdmin" >
+			</td>
+				 	
+			<td><input type="submit" value="Add"></td>
+		</form>
 		</tr>
-		<tr><hr></tr>
-		<tr th:each="u : ${userList}">
+		
+		<div  th:if="${userList != null and !userList.empty}">
+			<tr th:each="u : ${userList}">
 		
 			<form method="post" th:action="@{/admin/database/user/update}" th:object="${user}">
 				
@@ -109,8 +110,10 @@
 				<td><input type="submit" value="Delete"></td>
 			</form>
 			
-		</tr>
+			</tr>
+		</div>
+			
+		
 	</table>
-
 </body>
 </html>

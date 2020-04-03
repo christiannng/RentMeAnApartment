@@ -29,20 +29,21 @@ public class HomeController {
 	private static User currentUser;
 	private static Apartment currentApt;
 
-	/*
+	
 	@GetMapping("/")
 	public String index(Model model, @ModelAttribute User user) {
 		currentUser = null;
 		return "index";
-	}*/
+	}
 	
+	/*
 	@GetMapping("/")
 	public String index(Model model, @ModelAttribute Apartment apt) {
 		
 		model.addAttribute("apartmentList", apartmentRepo.findAll());
 		return "adminApartmentDB";
 		
-	}
+	}*/
 
 	@GetMapping("/registerNewAccount")
 	public String handleErrorRegister(Model model, @ModelAttribute User user) {
