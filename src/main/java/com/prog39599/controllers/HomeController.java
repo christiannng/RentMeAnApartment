@@ -8,12 +8,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.prog39599.beans.Account;
+import com.prog39599.beans.Apartment;
 import com.prog39599.beans.User;
 import com.prog39599.repositories.AccountRepository;
+import com.prog39599.repositories.ApartmentRepository;
 import com.prog39599.repositories.UserRepository;
 
 import lombok.AllArgsConstructor;
@@ -24,23 +25,24 @@ public class HomeController {
 
 	private UserRepository userRepo;
 	private AccountRepository accountRepo;
+	private ApartmentRepository apartmentRepo;
 	private static User currentUser;
+	private static Apartment currentApt;
 
-	
+	/*
 	@GetMapping("/")
 	public String index(Model model, @ModelAttribute User user) {
 		currentUser = null;
 		return "index";
-	}
-	
-	/*
-	@GetMapping("/")
-	public String index(Model model, @ModelAttribute User user) {
-		List<User> users = userRepo.findAllByOrderByIdAsc();
-		model.addAttribute("userList", users);
-		
-		return "adminUserDB";
 	}*/
+	
+	@GetMapping("/")
+	public String index(Model model, @ModelAttribute Apartment apt) {
+		
+		model.addAttribute("apartmentList", apartmentRepo.findAll());
+		return "adminApartmentDB";
+		
+	}
 
 	@GetMapping("/registerNewAccount")
 	public String handleErrorRegister(Model model, @ModelAttribute User user) {
@@ -290,9 +292,6 @@ public class HomeController {
 		Optional<User> userInDB = userRepo.findById(user.getId());
 		User foundUser = userInDB.get();
 		
-		boolean a = user.getFirstname().isBlank();
-		boolean b = foundUser.getFirstname().equals(user.getFirstname()); 
-		
 		if(!user.getFirstname().isBlank() && !foundUser.getFirstname().equals(user.getFirstname())) {
 			foundUser.setFirstname(user.getFirstname());
 			isAnythingToUpdate = true;
@@ -331,5 +330,149 @@ public class HomeController {
 		}
 		
 		return isAnythingToUpdate;
+	}
+
+	@GetMapping("/admin/database/apartment")
+	public String queryMovieDbError(Model model, @ModelAttribute Apartment movie, @ModelAttribute User user) {
+		return "index";
+	}
+	
+	@PostMapping("/admin/database/apartment")
+	public String queryMovieDb(Model model, @ModelAttribute Apartment apt) {
+		
+		if(currentUser == null) {
+			return "index";
+		}
+		
+		if(currentUser.getAccount().isAdmin()) {
+			model.addAttribute("movieList", apartmentRepo.findAll());
+			return "adminMovieDB";
+		}
+		
+		return "index";
+	}
+	
+	@PostMapping("/admin/database/apartment/add")
+	public String addApt(Model model, @ModelAttribute Apartment apt) {
+		
+		boolean a = isAptValidated(apt);
+		if(!isAptValidated(apt)) {
+			model.addAttribute("statusBad", "Could not add apartment due to validation error");
+			return "adminApartmentDB";
+		} else {
+			apartmentRepo.save(apt);
+			model.addAttribute("statusGood", "Added Apartment Successfully");
+			model.addAttribute("apartmentList", apartmentRepo.findAll());
+			return "adminApartmentDB";
+		}
+			
+		
+		/*if(currentUser == null) {
+			return "index";
+		}
+		
+		if(currentUser.getAccount().isAdmin()) {
+			if(isAptValidated(apt))
+			model.addAttribute("movieList", apartmentRepo.findAll());
+			return "adminMovieDB";
+		}
+		
+		return "index"; */
+		
+	}
+	
+	@PostMapping("/admin/database/apartment/update")
+	public String updateApt(Model model, @ModelAttribute Apartment apt, 
+			@RequestParam(defaultValue="false") boolean isAvailableNow, @RequestParam String province) {
+		
+		apt.setStatus(isAvailableNow);
+		apt.setProvince(province);
+		
+		if(updateApartment(apt)) {
+			model.addAttribute("statusGood", "Updated Apartment!!!");
+		} else {
+			model.addAttribute("statusBad", "There is nothing to update!!!");
+		}
+		
+		model.addAttribute("apartmentList", apartmentRepo.findAllByOrderByIdAsc());
+	
+		return "adminApartmentDB";
+	}
+	
+	@PostMapping("/admin/database/apartment/delete")
+	public String deleteApt(Model model, @ModelAttribute Apartment apt, @RequestParam Long apartmentId) {
+		apartmentRepo.deleteById(apartmentId);
+		
+		model.addAttribute("statusGood", "Deleted The Apartment Successfully!!!");
+		List<Apartment> apartments = apartmentRepo.findAllByOrderByIdAsc();
+		model.addAttribute("apartmentList", apartments);
+		
+		return "adminApartmentDB";
+	}
+	
+	private boolean updateApartment(Apartment apt) {
+		
+		boolean isAnythingToUpdate = false;
+		Optional<Apartment> aptInDB = apartmentRepo.findById(apt.getId());
+		Apartment foundApt = aptInDB.get();
+		
+		foundApt.setProvince(apt.getProvince());
+		foundApt.setApartmentNo(apt.getApartmentNo());
+		isAnythingToUpdate = true;
+		
+		if(!apt.getStreet().isBlank() && !foundApt.getStreet().equals(foundApt.getStreet())) {
+			foundApt.setStreet(apt.getStreet());
+			isAnythingToUpdate = true;
+		}
+		
+		if(!apt.getCity().isBlank() && !foundApt.getCity().equals(foundApt.getCity())){
+			foundApt.setCity(apt.getCity());
+			isAnythingToUpdate = true;
+		}
+		
+		if(!apt.getPostalCode().isBlank() && !foundApt.getPostalCode().equals(foundApt.getPostalCode())) {
+			foundApt.setPostalCode(apt.getPostalCode());
+			isAnythingToUpdate = true;
+		}
+		
+		if(!apt.getPropertyManager().isBlank() && !foundApt.getPropertyManager().equals(foundApt.getPropertyManager())) {
+			foundApt.setPropertyManager(apt.getPropertyManager());
+			isAnythingToUpdate = true;
+		}
+		
+		if(!foundApt.isStatus() != foundApt.isStatus()) {
+			foundApt.setStatus(apt.isStatus());
+			isAnythingToUpdate = true;
+		}
+		
+		if(apt.getRentFrom() != null && foundApt.getRentFrom() != apt.getRentFrom()) {
+			foundApt.setRentFrom(apt.getRentFrom());
+			isAnythingToUpdate = true;
+		}
+		
+		if(apt.getRentTo() != null && foundApt.getRentTo() != apt.getRentTo()) {
+			foundApt.setRentTo(apt.getRentTo());
+			isAnythingToUpdate = true;
+		}
+		
+		if(isAnythingToUpdate) {
+			apartmentRepo.save(foundApt);
+		}
+		
+		return isAnythingToUpdate;
+	}
+	
+	private boolean isAptValidated(Apartment apt) {
+		boolean isValidated = true;
+		
+		if(apt.getStreet().isBlank()) isValidated = false;
+		if(apt.getCity().isBlank()) isValidated = false;
+		if(apt.getProvince().isBlank()) isValidated = false;
+		if(apt.getPostalCode().isBlank()) isValidated = false;
+		if(apt.getPropertyManager().isBlank()) isValidated = false;
+		if(apt.getRentFrom() == null) isValidated = false;
+		if(apt.getRentTo() == null) isValidated = false;
+		
+		return isValidated;
 	}
 }

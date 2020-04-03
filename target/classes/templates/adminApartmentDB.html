@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Wellcome To Apartment Database page</title>
+<link href="../static/css/main.css" th:href="@{/css/main.css}" rel="stylesheet" />
+</head>
+<body>
+	<div th:text="${statusGood}" class="good"></div>
+	<div th:text="${statusBad}" class="error"></div>
+
+	<h1>This is the Apartment Database page</h1>
+	<br><hr>
+
+	<table>
+		<tr>
+			<th>Apartment ID</th>
+			<th>Property Manager</th>
+			<th>Street</th>
+			<th>City</th>
+			<th>Province</th>
+			<th>Postal Code</th>
+			<th>Apartment #</th>
+			<th>Available Now</th>
+			<th>From</th>
+			<th>To</th>
+		</tr>
+		
+		<tr>
+			<form method="post" th:action="@{/admin/database/apartment/add}" th:object="${apartment}">
+			 	<td>
+			 		<!-- <input type="hidden" th:field="*{id}" style="width: 40px;"> -->
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="text" name="propertyManager" th:value="''" value="*{propertyManager}">
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="text" name="street" th:value="''" value="*{street}">
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="text" name="city" th:value="''" value="*{city}">
+			 	</td>
+			 	
+			 	<td>
+			 		<select th:field="*{province}">
+						<option th:value="'ON'" th:text="'ON'"></option>
+						<option th:value="'QC'" th:text="'QC'"></option>
+						<option th:value="'NS'" th:text="'NS'"></option>
+						<option th:value="'NB'" th:text="'NB'"></option>
+						<option th:value="'MB'" th:text="'MB'"></option>
+						<option th:value="'BC'" th:text="'BC'"></option>
+						<option th:value="'PE'" th:text="'PE'"></option>
+						<option th:value="'SK'" th:text="'SK'"></option>
+						<option th:value="'AB'" th:text="'AB'"></option>
+						<option th:value="'NL'" th:text="'NL'"></option>
+						<option th:value="'NT'" th:text="'NT'"></option>
+						<option th:value="'YT'" th:text="'YT'"></option>
+						<option th:value="'NU'" th:text="'NU'"></option>
+					</select>
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="text" th:value="''" name="postalCode" value="*{postalCOde}" pattern="[a-zA-Z][0-9][a-zA-Z][0-9][a-zA-Z][0-9]" >
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="number" th:value="101" name="apartmentNo" value="*{apartmentNo}" style="width: 160px">
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="checkbox" name="status" th:field="*{status}">
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="date" name="rentFrom" th:value="*{rentFrom}">
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="date" name="rentTo" th:value="*{rentTo}">
+			 	</td>
+			 	
+				<td><input type="submit" value="Add"></td>
+			</form>
+		</tr>
+		
+		<div th:if="${apartmentList != null and !apartmentList.empty}">
+		
+		<tr th:each="a : ${apartmentList}">
+		
+			<form method="post" th:action="@{/admin/database/apartment/update}" th:object="${apartment}">
+				
+			 	<td>
+			 		<input  type="number" th:value="${a.id}" style="width: 40px;" disabled>
+			 	</td>
+			 	
+			 	<input type="hidden" name="id" value="*{id}" th:value="${a.id}">
+			 	
+			 	<td>
+			 		<input type="text" name="propertyManager" value="*{propertyManager}" th:value="${a.propertyManager}">
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="text" name="street" value="*{street}" th:value="${a.street}">
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="text" name="city" value="*{city}" th:value="${a.city}">
+			 	</td>
+			 	
+			 	<td>
+			 		<select name="province">
+						<option th:text="'ON'" th:selected="${a.province} == 'ON'"></option>
+						<option th:text="'QC'" th:selected="${a.province} == 'QC'"></option>
+						<option th:text="'NS'" th:selected="${a.province} == 'NS'"></option>
+						<option th:text="'NB'" th:selected="${a.province} == 'NB'"></option>
+						<option th:text="'MB'" th:selected="${a.province} == 'MB'"></option>
+						<option th:text="'BC'" th:selected="${a.province} == 'BC'"></option>
+						<option th:text="'PE'" th:selected="${a.province} == 'PE'"></option>
+						<option th:text="'SK'" th:selected="${a.province} == 'SK'"></option>
+						<option th:text="'AB'" th:selected="${a.province} == 'AB'"></option>
+						<option th:text="'NL'" th:selected="${a.province} == 'NL'"></option>
+						<option th:text="'NT'" th:selected="${a.province} == 'NT'"></option>
+						<option th:text="'YT'" th:selected="${a.province} == 'YT'"></option>
+						<option th:text="'NU'" th:selected="${a.province} == 'NU'"></option>
+					</select>
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="text" name="postalCode" value="*{postalCode}" 
+			 		pattern="[a-zA-Z][0-9][a-zA-Z][0-9][a-zA-Z][0-9]" th:value="${a.postalCode}">
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="number" name="apartmentNo" value="*{apartmentNo}" 
+			 		style="width: 160px" th:value="${a.apartmentNo}">
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="checkbox" name="isAvailableNow" th:checked="${a.status}">
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="date" name="rentFrom" value="*{rentFrom}" th:value="${#dates.format(a.rentFrom, 'yyyy-MM-dd')}" >
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="date" name="rentTo" value="*{rent.To}" th:value="${#dates.format(a.rentTo, 'yyyy-MM-dd')}" >
+			 	</td>
+			 	
+			 	<!-- 
+			 	th:value="${a.rentTo}"
+			 	th:value="${a.rentFrom}" 
+			 	 -->
+			 	
+				<td><input type="submit" value="Update"></td>
+			</form>
+			
+			<form method="post" th:action="@{/admin/database/apartment/delete}">
+				<input type="hidden" name="apartmentId" th:value="${a.id}">
+				<td><input type="submit" value="Delete"></td>
+			</form>
+			
+		</tr>
+	</div>
+	</table>
+	
+	
+
+</body>
+</html>
