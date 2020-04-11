@@ -21,6 +21,7 @@
 			<th>Province</th>
 			<th>Postal Code</th>
 			<th>Apartment #</th>
+			<th>Image URL</th>
 			<th>Available Now</th>
 			<th>From</th>
 			<th>To</th>
@@ -68,6 +69,10 @@
 			 	
 			 	<td>
 			 		<input type="number" th:value="101" name="apartmentNo" value="*{apartmentNo}" style="width: 160px">
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="text" name="imageURL" th:field="*{imageURL}">
 			 	</td>
 			 	
 			 	<td>
@@ -136,6 +141,10 @@
 			 	<td>
 			 		<input type="number" name="apartmentNo" value="*{apartmentNo}" 
 			 		style="width: 160px" th:value="${a.apartmentNo}">
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="text" name="imageURL" value="*{imageURL}" th:value="${a.imageURL}">
 			 	</td>
 			 	
 			 	<td>

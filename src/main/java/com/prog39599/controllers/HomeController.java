@@ -423,8 +423,8 @@ public class HomeController {
 		}
 		
 		if(currentUser.getAccount().isAdmin()) {
-			model.addAttribute("movieList", apartmentRepo.findAll());
-			return "adminMovieDB";
+			model.addAttribute("apartmentList", apartmentRepo.findAll());
+			return "adminApartmentDB";
 		}
 		
 		return "index";

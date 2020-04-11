@@ -47,6 +47,8 @@ public class Apartment {
 	
 	private boolean status;
 	
+	private String imageURL;
+	
 	@Column(name="Availablity") 
 	private boolean available;
 	
