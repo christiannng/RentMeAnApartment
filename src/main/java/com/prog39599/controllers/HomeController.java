@@ -185,8 +185,57 @@ public class HomeController {
 		if (accountFoundInDB.get(0).isAdmin()) {
 			return "admin";
 		}
+		
+		return "homepage";
+		
+		/*
+		model.addAttribute("aptList", apartmentRepo.findAll());
+		return "browse";*/
+	}
+	
+	@GetMapping("/user/browse")
+	public String getBrowse(Model model, @ModelAttribute User user) {
+		currentUser = null;
+		return "index";
+	}
+	
+	@PostMapping("/user/browse")
+	public String postBrowse(Model model) {
 		model.addAttribute("aptList", apartmentRepo.findAll());
 		return "browse";
+	}
+	
+	@GetMapping("/user/listAnApartment")
+	public String getListApt(Model model, @ModelAttribute User user) {
+		currentUser = null;
+		return "index";
+	}
+	
+	@PostMapping("/user/listAnApartment")
+	public String postListApt(Model model, @ModelAttribute Apartment apartment) {
+		if(currentUser == null) {
+			return "index";
+		} else {
+			return "userListApt";
+		}
+	}
+	
+	@GetMapping("/user/database/apartment/add")
+	public String getUserAddApt(Model model, @ModelAttribute User user) {
+		return "index";
+	}
+	
+	@PostMapping("/user/database/apartment/add")
+	public String postUserAddApt(Model model, @ModelAttribute Apartment apt) {
+		
+		if(!isAptValidated(apt)) {
+			model.addAttribute("statusBad", "Could not add apartment due to validation error");
+			return "userListApt";
+		} else {
+			apartmentRepo.save(apt);
+			model.addAttribute("statusGood", "Added Apartment Successfully");
+			return "homepage";
+		}
 	}
 
 	@GetMapping("/admin/database/user")

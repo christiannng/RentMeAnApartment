@@ -3,11 +3,29 @@
 <head>
 <meta charset="ISO-8859-1">
 <title>Wellcome To RENT-ME-AN-APARTMENT</title>
-<link href="../static/css/main.css" th:href="@{/css/main.css}" rel="stylesheet" />
+<link href="../static/css/main.css" th:href="@{/css/main.css}"
+	rel="stylesheet" />
 </head>
 <body>
+	<div th:text="${statusGood}" class="good"></div>
+	<div th:text="${statusBad}" class="error"></div>
+	
+	<h1>What would you like to do today?</h1>
 
-
-
+	<table>
+		<tr>
+			<td>
+				<form method="post" th:action="@{/user/browse}">
+					<input type="submit" value="Browse for an aprtment">
+				</form>
+			</td>
+			
+			<td>
+				<form method="post" th:action="@{/user/listAnApartment}">
+					<input type="submit" value="List an apartment">
+				</form>
+			</td>
+		</tr>
+	</table>
 </body>
 </html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Wellcome To Apartment Database page</title>
+<link href="../static/css/main.css" th:href="@{/css/main.css}"
+	rel="stylesheet" />
+</head>
+<body>
+	<div th:text="${statusGood}" class="good"></div>
+	<div th:text="${statusBad}" class="error"></div>
+
+	<h1>List An Apartment</h1>
+	<br><hr>
+
+	<table>
+		<form method="post" th:action="@{/user/database/apartment/add}" th:object="${apartment}">
+		<input type="hidden" name="id" th:value="*{id}">
+		
+		<tr>
+			<td class="column">Property Manager:</td>
+			<td>
+			 	<input type="text" name="propertyManager" th:value="''" value="*{propertyManager}">
+			 </td>
+		</tr>
+		
+		<tr>
+			<td class="column">Street:</td>
+			<td>
+			 	<input type="text" name="street" th:value="''" value="*{street}">
+			 </td>
+		</tr>
+		
+		<tr>
+			<td class="column">City:</td>
+			<td>
+			 	<input type="text" name="city" th:value="''" value="*{city}">
+			 </td>
+		</tr>
+		
+		<tr>
+			<td class="column">Province:</td>
+			<td>
+			 	<select th:field="*{province}">
+					<option th:value="'ON'" th:text="'ON'"></option>
+					<option th:value="'QC'" th:text="'QC'"></option>
+					<option th:value="'NS'" th:text="'NS'"></option>
+					<option th:value="'NB'" th:text="'NB'"></option>
+					<option th:value="'MB'" th:text="'MB'"></option>
+					<option th:value="'BC'" th:text="'BC'"></option>
+					<option th:value="'PE'" th:text="'PE'"></option>
+					<option th:value="'SK'" th:text="'SK'"></option>
+					<option th:value="'AB'" th:text="'AB'"></option>
+					<option th:value="'NL'" th:text="'NL'"></option>
+					<option th:value="'NT'" th:text="'NT'"></option>
+					<option th:value="'YT'" th:text="'YT'"></option>
+					<option th:value="'NU'" th:text="'NU'"></option>
+				</select>
+		 	</td>
+		</tr>
+		
+		<tr>
+			<td class="column">Postal Code:</td>
+			<td>
+			 	<input type="text" th:value="''" name="postalCode" value="*{postalCode}" pattern="[a-zA-Z][0-9][a-zA-Z][0-9][a-zA-Z][0-9]" >
+			 </td>
+		</tr>
+		<tr>
+			<td class="column">Apartment #:</td>
+			<td>
+			 	<input type="number" th:value="101" name="apartmentNo" value="*{apartmentNo}" style="width: 160px">
+			 </td>
+		</tr>
+		
+		<!-- 
+		<tr>
+			<td class="column">Available Now</td>
+			<td>
+			 	<input type="checkbox" name="status" th:field="*{status}">
+			 </td>
+		</tr>
+		 -->
+		
+		
+		<tr>
+			<td class="column">From:</td>
+			<td>
+			 	<input type="date" name="rentFrom" th:value="*{rentFrom}">
+			 </td>
+		</tr>
+		<tr>
+			<td class="column">To:</td>
+			<td>
+			 	<input type="date" name="rentTo" th:value="*{rentTo}">
+			 </td>
+		</tr>
+		
+		<tr><td><input type="submit" value="Add and Wait for an admin to approve"></td></tr>
+		
+		</form>
+	</table>
+</body>
+</html>

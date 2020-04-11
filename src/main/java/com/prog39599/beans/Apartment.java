@@ -47,9 +47,11 @@ public class Apartment {
 	
 	private boolean status;
 	
-	
 	@Column(name="Availablity") 
 	private boolean available;
+	
+	@Column(columnDefinition = "boolean default false")
+	private boolean approved;
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
