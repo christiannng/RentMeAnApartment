@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Wellcome To RENT-ME-AN-APARTMENT</title>
+<link href="../static/css/main.css" th:href="@{/css/main.css}" rel="stylesheet" />
+</head>
+<body>
+<h1>Apartment list</h1>
+	<div style="color: red" th:text="${error}"></div><br>
+		
+	<table th:if="${aptList != null and !aptList.empty}">
+		<tr style="font-weight:bold;">
+			<td>Apartment No</td>
+			<td>Street</td>
+			<td>City</td>
+			<td>Province</td>
+			<td>Postal Code</td>
+			<td>Property Manager</td>
+			<td>Rent Start</td>
+			<td>Rent End</td>
+		</tr>
+		<tr th:each="a : ${aptList}">
+			<td th:text="${a.apartmentNo}">409</td>
+			<td th:text="${a.street}">145</td>
+			<td th:text="${a.city}">Space City</td>
+			<td th:text="${a.province}">Sheridan</td>
+			<td th:text="${a.postalCode}">A1A 0B0</td>
+			<td th:text="${a.propertyManager}">Malek</td>
+			<td th:text="${a.rentFrom}">2020-04-10</td>
+			<td th:text="${a.rentTo}">2020-04-30</td>
+			<td>
+				<form method ="post" th:action="@{/rentProcess}">
+					<input type="hidden" name = "myStr" th:value="${a.id}" value="${myStr}">
+					<input type="submit" value="Rent!">
+				</form>
+			</td>
+		</tr>
+	</table>
+		<form method="get" th:action="@{/}">
+			<input type="submit" value="Logout!">
+	</form>
+</body>
+</html>

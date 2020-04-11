@@ -1,5 +1,8 @@
 package com.prog39599.controllers;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.prog39599.beans.Account;
@@ -33,6 +37,7 @@ public class HomeController {
 	@GetMapping("/")
 	public String index(Model model, @ModelAttribute User user) {
 		currentUser = null;
+		
 		return "index";
 	}
 	
@@ -119,6 +124,29 @@ public class HomeController {
 	@PostMapping("/continueAsGuest")
 	public String countinueAsGuets(Model model, @ModelAttribute User user) {
 		currentUser = null;
+		model.addAttribute("aptList", apartmentRepo.findAll());
+		return "browse";
+	}
+	@RequestMapping("/rentProcess")
+	public String rentApt(Model model, @RequestParam String myStr) {
+		Optional<Apartment> aptSelected = apartmentRepo.findById(Long.parseLong(myStr));
+		currentApt = aptSelected.get();
+		
+		if(true) System.out.println("");//will use an if here if we decide to list all then check availablility 
+										//otherwise will remove it if we list only available in browse
+		if(currentUser == null) {
+			currentUser = User.builder().firstname("Guest").build();
+			
+		}
+		model.addAttribute("apt", currentApt);
+		model.addAttribute("user", currentUser);
+	
+	return "rent";
+	}
+	@GetMapping("/receipt")
+	public String receipt(Model model) {
+
+	
 		return "homepage";
 	}
 
@@ -157,8 +185,8 @@ public class HomeController {
 		if (accountFoundInDB.get(0).isAdmin()) {
 			return "admin";
 		}
-
-		return "homepage";
+		model.addAttribute("aptList", apartmentRepo.findAll());
+		return "browse";
 	}
 
 	@GetMapping("/admin/database/user")

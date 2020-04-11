@@ -3,6 +3,7 @@ package com.prog39599.beans;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -45,6 +46,10 @@ public class Apartment {
 	private String propertyManager;
 	
 	private boolean status;
+	
+	
+	@Column(name="Availablity") 
+	private boolean available;
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
