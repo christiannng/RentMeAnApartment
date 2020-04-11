@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Wellcome To RENT-ME-AN-APARTMENT</title>
+<link href="../static/css/main.css" th:href="@{/css/main.css}"
+	rel="stylesheet" />
+</head>
+<body>
+	<h1>Confirm Rent</h1>
+	<form method="get" action="receipt">
+		Hello <span style="font-weight:bold;" th:text="${user.firstname}"></span>!<br>
+		You have picked Apartment: Apt:
+		<span style="display: in-line" th:text="${apt.apartmentNo}"></span>-
+		<span style="display: in-line" th:text="${apt.street}"></span>
+		<span style="display: in-line" th:text="${apt.city}"></span>
+		<span style="display: in-line" th:text="${apt.province}"></span>
+		<span style="display: in-line" th:text="${apt.postalCode}"></span>		
+		<br>
+		The rent start from 
+		<span style="display: in-line" th:text="${apt.rentFrom}"></span>
+		till
+		<span style="display: in-line" th:text="${apt.rentTo}"></span>
+		<br>
+		Your property manager is: 
+		<span style="display: in-line" th:text="${apt.propertyManager}"></span> <br>
+				
+		<input type="submit" value="Confirm Rent!">
+	</form>
+	
+	
+	<form method="get" th:action="@{/}">
+		<input type="submit" value="Logout!">
+	</form>
+</body>
+</html>
