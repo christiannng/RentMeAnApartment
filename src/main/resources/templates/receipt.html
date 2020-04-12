@@ -9,7 +9,7 @@
 <body>
 	<h1>Check your email for a confirmation of the order!</h1>
 	The email was sent to this address:
-	<span style="display: in-line" th:text="${user.email}"></span><br>
+	<span style="display: in-line" th:text="${email}"></span><br>
 
 	<form method="get" th:action="@{/}">
 		<input type="submit" value="Logout!"/>

@@ -3,15 +3,15 @@ package com.prog39599.beans;
 
 
 import java.time.LocalDate;
-import java.util.Date;
+//import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+//import javax.persistence.Temporal;
+//import javax.persistence.TemporalType;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -58,7 +58,6 @@ public class Apartment {
 	@Column(name="Availablity") 
 	private boolean available;
 	
-	@Column(columnDefinition = "boolean default false")
 	private boolean approved;
 	
 	//@Temporal(TemporalType.TIMESTAMP)
@@ -70,4 +69,8 @@ public class Apartment {
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@Column(columnDefinition = "DATE")
 	private LocalDate   rentTo;
+	
+	public String getAddress() {
+		return street + ", " + city + ", " + province + ", " + postalCode;
+	}
 }

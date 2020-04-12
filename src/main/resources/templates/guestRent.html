@@ -11,12 +11,13 @@
 <br>
 <div style="color: red" th:text="${error_email}"></div><br>
 	
-<form method="get" th:action="@{/guestEmail}" th:object="${user}">
-	<input type="email" name="email" th:field="*{email}"> <br>
+<form method="get" th:action="@{/user/proceedRent/guestEmail}">
+	Email: <input type="email" name="guestEmail"> <br>
 	<input type="submit" value="Submit!">
 </form>
+
 <form method="get" th:action="@{/}">
-		<input type="submit" value="Logout!">
-	</form>
+	<input type="submit" value="Logout!">
+</form>
 </body>
 </html>

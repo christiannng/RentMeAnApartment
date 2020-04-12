@@ -21,9 +21,10 @@
 			<th>Province</th>
 			<th>Postal Code</th>
 			<th>Apartment #</th>
-			<th>Rent</th>
+			<th>Rent per month</th>
 			<th>Image URL</th>
-			<th>Available Now</th>
+			<th>Approved?</th>
+			<th>Rented?</th>
 			<th>From</th>
 			<th>To</th>
 		</tr>
@@ -72,14 +73,18 @@
 			 		<input type="number" th:value="101" name="apartmentNo" value="*{apartmentNo}" style="width: 160px">
 			 	</td>
 			 	<td>
-			 		<input type="number" th:value="500" name="rent" value="*{rent}" style="width: 160px">
+			 		<input type="number" th:value="0" name="rent" value="*{rent}" style="width: 160px">
 			 	</td>
 			 	<td>
-			 		<input type="text" name="imageURL" th:field="*{imageURL}">
+			 		<input type="text" th:value="''" name="imageURL" value="*{imageURL}">
 			 	</td>
 			 	
 			 	<td>
-			 		<input type="checkbox" name="status" th:field="*{status}">
+			 		<input type="checkbox" name="approved" th:field="*{approved}" checked="false">
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="checkbox" name="status" th:field="*{status}" checked="false">
 			 	</td>
 			 	
 			 	<td>
@@ -151,6 +156,10 @@
 			 	</td>
 			 	<td>
 			 		<input type="text" name="imageURL" value="*{imageURL}" th:value="${a.imageURL}">
+			 	</td>
+			 	
+			 	<td>
+			 		<input type="checkbox" name="isApproved" th:checked="${a.approved}">
 			 	</td>
 			 	
 			 	<td>

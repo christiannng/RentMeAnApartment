@@ -27,7 +27,7 @@
 			
 			<tr>
 				<td  class="column">Age:</td>
-				<td><input type="number" name="age" th:field="*{age}" min="10"></td>
+				<td><input type="number" name="age" th:value="19" value="*{age}" min="10"></td>
 				<td><div style="color:red" th:text="${error_age}"></div></td>
 			</tr>
 			
@@ -58,8 +58,6 @@
 			<tr>
 				<td></td><td><input type="submit" value="Create New Account"></td>
 			</tr>
-			
-			
 		</form>
 		
 	</table>

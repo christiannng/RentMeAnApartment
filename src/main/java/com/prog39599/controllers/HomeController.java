@@ -2,15 +2,15 @@ package com.prog39599.controllers;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+//import java.text.ParseException;
+//import java.text.SimpleDateFormat;
+//import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,14 +37,16 @@ public class HomeController {
 	private ApartmentRepository apartmentRepo;
 	private static User currentUser;
 	private static Apartment currentApt;
+	private static String guestEmail;
 	
 	@Autowired
-	private static JavaMailSender jms;
+    private JavaMailSender javaMailSender;
 	
 	@GetMapping("/")
 	public String index(Model model, @ModelAttribute User user) {
 		currentUser = null;
-
+		//sendEmail("rentertest101@gmail.com", "Confirmaiton Email", "THIS IS TOTAL BS");
+		
 		return "index";
 	}
 
@@ -116,6 +118,7 @@ public class HomeController {
 		if (hasError) {
 			return "registration";
 		} else {
+			user.getAccount().setPassword(encryptWithMD5(user.getAccount().getPassword()));;
 			accountRepo.save(user.getAccount());
 			userRepo.save(user);
 			model.addAttribute("statusGood", "Registration Successful");
@@ -137,9 +140,11 @@ public class HomeController {
 	@PostMapping("/continueAsGuest")
 	public String countinueAsGuets(Model model, @ModelAttribute User user) {
 		currentUser = null;
-		model.addAttribute("aptList", apartmentRepo.findByStatusIsTrue());
+		//model.addAttribute("aptList", apartmentRepo.findByStatusIsTrue());
+		model.addAttribute("aptList", apartmentRepo.findByApprovedIsTrueOrderByStatus());
 		return "browse";
 	}
+	/*
 	@RequestMapping("/guestEmail")
 	public String guestEmail(Model model, @RequestParam String email) {
 		//might need to check for more things
@@ -155,11 +160,64 @@ public class HomeController {
 		model.addAttribute("user", currentUser);
 		return "rent";
 	}
+	*/
+	
+	@RequestMapping("/user/proceedRent/guestEmail")
+	public String guestEmail(Model model, @RequestParam String guestEmail) {
+		HomeController.guestEmail = guestEmail;
+		model.addAttribute("apt", currentApt);
+		
+		if (currentUser == null) model.addAttribute("name", "Guest");
+		else model.addAttribute("name", currentUser.getFirstname());
+		return "rent";
+	}
+	
+	@RequestMapping("/user/proceedRent")
+	public String proceedRent(Model model, @RequestParam String aptId) {
+		Optional<Apartment> aptSelected = apartmentRepo.findById(Long.parseLong(aptId));
+		currentApt = aptSelected.get();
+		
+		if (currentUser == null) {
+			model.addAttribute("apt", currentApt);
+			return "guestRent";
+		}
+		
+		model.addAttribute("apt", currentApt);
+		model.addAttribute("user", currentUser);
+
+		return "rent";
+	}
+	
+	@RequestMapping("/user/proceedRent/confirm")
+	public String confirm(Model model) {
+		
+		//making apt unavailable, we need to decide what
+		currentApt.setStatus(true);
+		currentApt = apartmentRepo.save(currentApt);
+		
+		String email, name;
+		if(currentUser != null) {
+			email = currentUser.getEmail();
+			name = currentUser.getFirstname();
+		}
+		else {
+			email = guestEmail;
+			name = "My Dear Friend!";
+		}
+	
+		System.out.println("email is " + email);
+		
+		sendEmail(email, "Confirmaiton Email For Your New Awesome Apartment", summaryApt(name));
+		
+		model.addAttribute("email", email);
+		return "receipt";
+	}
+	
+	/*
 	@RequestMapping("/rentProcess")
 	public String rentApt(Model model, @RequestParam String myStr) {
 		Optional<Apartment> aptSelected = apartmentRepo.findById(Long.parseLong(myStr));
 		currentApt = aptSelected.get();
-		
 		
 		if (true)
 			System.out.println("");// will use an if here if we decide to list all then check availablility
@@ -176,7 +234,9 @@ public class HomeController {
 
 		return "rent";
 	}
+	*/
 
+	/*
 	@GetMapping("/receipt")
 	public String receipt(Model model, @RequestParam String myStr, @RequestParam String userId) {
 		Optional<Apartment> aptSelected = apartmentRepo.findById(Long.parseLong(myStr));
@@ -208,11 +268,11 @@ public class HomeController {
 					
 		
 		
-		sendEmail("<"+email+">", "<Confirmaiton Email>","<"+aptBooked+">");
+		sendEmail(email, "<Confirmaiton Email>",aptBooked);
 		model.addAttribute("user", currentUser);
 		return "receipt";
 	}
-
+*/
 	@GetMapping("/login")
 	public String handleErrorTryToLogin(Model model, @ModelAttribute User user) {
 		return "index";
@@ -228,7 +288,7 @@ public class HomeController {
 		}
 
 		List<Account> accountFoundInDB = accountRepo.findByUsernameAndPassword(currentAccount.getUsername(),
-				currentAccount.getPassword());
+				encryptWithMD5(currentAccount.getPassword()));
 
 		User userFoundInDB;
 		if (accountFoundInDB.size() != 1) {
@@ -270,7 +330,8 @@ public class HomeController {
 
 	@PostMapping("/user/browse")
 	public String postBrowse(Model model) {
-		model.addAttribute("aptList", apartmentRepo.findByStatusIsTrue());
+		//model.addAttribute("aptList", apartmentRepo.findByStatusIsTrue());
+		model.addAttribute("aptList", apartmentRepo.findByApprovedIsTrueOrderByStatus());
 		return "browse";
 	}
 
@@ -356,6 +417,7 @@ public class HomeController {
 			}
 
 			user.getAccount().setRetypepassword(user.getAccount().getPassword());
+			user.getAccount().setPassword(encryptWithMD5(user.getAccount().getPassword()));
 			user.setId(null);
 			userRepo.save(user);
 			accountRepo.save(user.getAccount());
@@ -463,8 +525,9 @@ public class HomeController {
 			isAnythingToUpdate = true;
 		}
 
-		if (account.getPassword().length() >= 3 && !account.getPassword().equals(foundAccount.getPassword())) {
-			foundAccount.setPassword(account.getPassword());
+		if (account.getPassword().length() >= 3 && 
+				!encryptWithMD5(account.getPassword()).equals(encryptWithMD5(foundAccount.getPassword()))) {
+			foundAccount.setPassword(encryptWithMD5(account.getPassword()));
 			isAnythingToUpdate = true;
 		}
 
@@ -504,7 +567,6 @@ public class HomeController {
 	@PostMapping("/admin/database/apartment/add")
 	public String addApt(Model model, @ModelAttribute Apartment apt) {
 
-		boolean a = isAptValidated(apt);
 		if (!isAptValidated(apt)) {
 			model.addAttribute("statusBad", "Could not add apartment due to validation error");
 			return "adminApartmentDB";
@@ -529,8 +591,11 @@ public class HomeController {
 
 	@PostMapping("/admin/database/apartment/update")
 	public String updateApt(Model model, @ModelAttribute Apartment apt,
-			@RequestParam(defaultValue = "false") boolean isAvailableNow, @RequestParam String province) {
+			@RequestParam(defaultValue = "false") boolean isAvailableNow, 
+			@RequestParam(defaultValue = "false") boolean isApproved,
+			@RequestParam String province) {
 
+		apt.setApproved(isApproved);
 		apt.setStatus(isAvailableNow);
 		apt.setProvince(province);
 
@@ -589,6 +654,11 @@ public class HomeController {
 
 		if (!foundApt.isStatus() != foundApt.isStatus()) {
 			foundApt.setStatus(apt.isStatus());
+			isAnythingToUpdate = true;
+		}
+		
+		if (!foundApt.isApproved() != foundApt.isApproved()) {
+			foundApt.setApproved(apt.isApproved());
 			isAnythingToUpdate = true;
 		}
 
@@ -666,11 +736,24 @@ public class HomeController {
 		msg.setSubject(subject);	
 		msg.setText(body);
 		try {
-			jms.send(msg);
+			javaMailSender.send(msg);
 		}
 		catch(Exception ex) {
 			ex.toString();
 		}
 		System.out.println("Done!");
+	}
+	
+	private String summaryApt(String name) {
+		return "Hello " + name + ",\n\n" +
+				"You have booked this Apartment:\n" + 
+				"Apartment No: " + currentApt.getApartmentNo() +
+				" at: " + currentApt.getAddress() + 
+				"\n\n The rent will be: $" + currentApt.getRent() +
+				"\n\n Your property manager will be: " +currentApt.getPropertyManager()+
+				"\n\n The period for the rent is from: " +currentApt.getRentFrom()+
+				" to " +currentApt.getRentTo()+
+				"\n\n Here is an image of the apartment:\n" + currentApt.getImageURL()+
+				"\n\nRegards,\n"+currentApt.getPropertyManager();
 	}
 }
