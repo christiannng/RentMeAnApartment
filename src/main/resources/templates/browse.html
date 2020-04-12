@@ -2,7 +2,7 @@
 <html xmlns:th="https://www.thymeleaf.org">
 <head>
 <meta charset="ISO-8859-1">
-<title>Wellcome To RENT-ME-AN-APARTMENT</title>
+<title>Welcome To RENT-ME-AN-APARTMENT</title>
 <link href="../static/css/main.css" th:href="@{/css/main.css}" rel="stylesheet" />
 </head>
 <body>
@@ -16,7 +16,12 @@
 	<div th:if="${aptList != null and !aptList.empty}">
 		<table th:each="a : ${aptList}">
 			<tr>
+			<div th:if= "${a.imageURL !='' }">
 				<td><img th:src="@{${a.imageURL}}" width="300" height="300"/></td>
+			</div>
+			<div th:unless= "${a.imageURL !='' }">
+				<td><img src="https://www.salonlfc.com/wp-content/uploads/2018/01/image-not-found-scaled-1150x647.png" width="300" height="300"/></td>
+			</div>
 				<td>
 					<table	th:if="${a.status}">
 						<tr><h1>THIS APARTMENT IS RENTED</h1></tr>

@@ -55,9 +55,6 @@ public class Apartment {
 	
 	private String imageURL;
 	
-	@Column(name="Availablity") 
-	private boolean available;
-	
 	private boolean approved;
 	
 	//@Temporal(TemporalType.TIMESTAMP)

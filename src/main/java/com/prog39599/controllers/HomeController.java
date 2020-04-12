@@ -184,7 +184,7 @@ public class HomeController {
 		
 		model.addAttribute("apt", currentApt);
 		model.addAttribute("user", currentUser);
-
+		model.addAttribute("name", currentUser.getFirstname());
 		return "rent";
 	}
 	
@@ -331,6 +331,7 @@ public class HomeController {
 	@PostMapping("/user/browse")
 	public String postBrowse(Model model) {
 		//model.addAttribute("aptList", apartmentRepo.findByStatusIsTrue());
+		
 		model.addAttribute("aptList", apartmentRepo.findByApprovedIsTrueOrderByStatus());
 		return "browse";
 	}
