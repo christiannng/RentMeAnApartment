@@ -270,7 +270,7 @@ public class HomeController {
 
 	@PostMapping("/user/browse")
 	public String postBrowse(Model model) {
-		model.addAttribute("aptList", apartmentRepo.findAll());
+		model.addAttribute("aptList", apartmentRepo.findByStatusIsTrue());
 		return "browse";
 	}
 
