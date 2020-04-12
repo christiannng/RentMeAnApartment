@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Wellcome To RENT-ME-AN-APARTMENT</title>
+<link href="../static/css/main.css" th:href="@{/css/main.css}"
+	rel="stylesheet" />
+</head>
+<body>
+<h1>Before renting an apartment, please enter an email!</h1>
+<br>
+<div style="color: red" th:text="${error_email}"></div><br>
+	
+<form method="get" th:action="@{/guestEmail}" th:object="${user}">
+	<input type="email" name="email" th:field="*{email}"> <br>
+	<input type="submit" value="Submit!">
+</form>
+<form method="get" th:action="@{/}">
+		<input type="submit" value="Logout!">
+	</form>
+</body>
+</html>

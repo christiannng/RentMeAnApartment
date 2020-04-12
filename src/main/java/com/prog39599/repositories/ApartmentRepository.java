@@ -9,4 +9,6 @@ import com.prog39599.beans.User;
 
 public interface ApartmentRepository extends JpaRepository<Apartment, Long> {
 	public List<Apartment> findAllByOrderByIdAsc();
+	
+	public List<Apartment> findByStatusIsTrue();
 }

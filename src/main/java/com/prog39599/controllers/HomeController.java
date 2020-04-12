@@ -8,6 +8,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,7 +37,10 @@ public class HomeController {
 	private ApartmentRepository apartmentRepo;
 	private static User currentUser;
 	private static Apartment currentApt;
-
+	
+	@Autowired
+	private static JavaMailSender jms;
+	
 	@GetMapping("/")
 	public String index(Model model, @ModelAttribute User user) {
 		currentUser = null;
@@ -122,25 +128,48 @@ public class HomeController {
 		currentUser = null;
 		return "homepage";
 	}
-
+	
+	@GetMapping("/home")
+	public String homepage(Model model) {
+		model.addAttribute("user", currentUser); //added this for users to back out from confirm rent page
+		return "homepage";
+	}
 	@PostMapping("/continueAsGuest")
 	public String countinueAsGuets(Model model, @ModelAttribute User user) {
 		currentUser = null;
-		model.addAttribute("aptList", apartmentRepo.findAll());
+		model.addAttribute("aptList", apartmentRepo.findByStatusIsTrue());
 		return "browse";
 	}
-
+	@RequestMapping("/guestEmail")
+	public String guestEmail(Model model, @RequestParam String email) {
+		//might need to check for more things
+		if(email.isBlank()) {
+			model.addAttribute("error_email", "The email cannot be empty!");
+			model.addAttribute("user", currentUser);
+			model.addAttribute("apt", currentApt);
+			return "guestRent";
+		}
+		currentUser.setEmail(email);
+		currentUser = userRepo.save(currentUser);
+		model.addAttribute("apt", currentApt);
+		model.addAttribute("user", currentUser);
+		return "rent";
+	}
 	@RequestMapping("/rentProcess")
 	public String rentApt(Model model, @RequestParam String myStr) {
 		Optional<Apartment> aptSelected = apartmentRepo.findById(Long.parseLong(myStr));
 		currentApt = aptSelected.get();
-
+		
+		
 		if (true)
 			System.out.println("");// will use an if here if we decide to list all then check availablility
 									// otherwise will remove it if we list only available in browse
 		if (currentUser == null) {
-			currentUser = User.builder().firstname("Guest").build();
-
+			currentUser = User.builder().firstname("Guest").lastname(" ").build();
+			currentUser = userRepo.save(currentUser);
+			model.addAttribute("user", currentUser);
+			model.addAttribute("apt", currentApt);
+			return "guestRent";
 		}
 		model.addAttribute("apt", currentApt);
 		model.addAttribute("user", currentUser);
@@ -149,9 +178,39 @@ public class HomeController {
 	}
 
 	@GetMapping("/receipt")
-	public String receipt(Model model) {
-
-		return "homepage";
+	public String receipt(Model model, @RequestParam String myStr, @RequestParam String userId) {
+		Optional<Apartment> aptSelected = apartmentRepo.findById(Long.parseLong(myStr));
+		currentApt = aptSelected.get(); //do i need to do this, pls remind to ask u
+		
+		Optional<User> userSelected = userRepo.findById(Long.parseLong(userId));
+		currentUser = userSelected.get(); //do i need to do this, pls remind to ask u
+		
+		String email, aptBooked;
+		//making apt unavailable, we need to decide what
+		currentApt.setAvailable(false);
+		currentApt.setStatus(false);
+		currentApt = apartmentRepo.save(currentApt);
+		email = currentUser.getEmail();
+		System.out.println("email is " + email);
+		aptBooked = "Hello " + currentUser.getFirstname() + ",\n\n" +
+					"You have booked this Apartment:\n" + 
+					"Apartment No: " +currentApt.getApartmentNo()+
+					"\nStreet: " +currentApt.getStreet()+
+					", City: " +currentApt.getCity()+
+					", Province: " +currentApt.getProvince()+
+					", Postal Code: " +currentApt.getPostalCode()+
+					"\n\n The rent will be: " +currentApt.getRent()+
+					"\n\n Your property manager will be: " +currentApt.getPropertyManager()+
+					"\n\n The period for the rent is from: " +currentApt.getRentFrom()+
+					" to " +currentApt.getRentTo()+
+					"\n\n Here is an image of the apartment:\n" + currentApt.getImageURL()+
+					"\n\nRegards,\n"+currentApt.getPropertyManager();
+					
+		
+		
+		sendEmail("<"+email+">", "<Confirmaiton Email>","<"+aptBooked+">");
+		model.addAttribute("user", currentUser);
+		return "receipt";
 	}
 
 	@GetMapping("/login")
@@ -195,7 +254,14 @@ public class HomeController {
 		 * model.addAttribute("aptList", apartmentRepo.findAll()); return "browse";
 		 */
 	}
-
+	
+	@GetMapping("/adminPage")
+	public String adminPage() {
+		
+		return "admin"; //not sure if we need to pass anything here, remind me and delete comment
+	}
+	
+	
 	@GetMapping("/user/browse")
 	public String getBrowse(Model model, @ModelAttribute User user) {
 		currentUser = null;
@@ -535,7 +601,10 @@ public class HomeController {
 			foundApt.setRentTo(apt.getRentTo());
 			isAnythingToUpdate = true;
 		}
-
+		if(apt.getRent() != null) {
+			foundApt.setRent(apt.getRent());
+			isAnythingToUpdate = true;
+		}
 		if (isAnythingToUpdate) {
 			apartmentRepo.save(foundApt);
 		}
@@ -557,6 +626,8 @@ public class HomeController {
 		if (apt.getPropertyManager().isBlank())
 			isValidated = false;
 		if (apt.getRentFrom() == null)
+			isValidated = false;
+		if (apt.getRent() == null)
 			isValidated = false;
 		if (apt.getRentTo() == null)
 			isValidated = false;
@@ -586,5 +657,20 @@ public class HomeController {
 		}
 		
 		return generatedPassword;
+	}
+	private void sendEmail(String to, String subject, String body) {
+		// TODO Auto-generated method stub
+		System.out.println("Sending your message!");
+		SimpleMailMessage msg = new SimpleMailMessage();
+		msg.setTo(to);
+		msg.setSubject(subject);	
+		msg.setText(body);
+		try {
+			jms.send(msg);
+		}
+		catch(Exception ex) {
+			ex.toString();
+		}
+		System.out.println("Done!");
 	}
 }

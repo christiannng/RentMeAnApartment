@@ -21,6 +21,7 @@
 			<th>Province</th>
 			<th>Postal Code</th>
 			<th>Apartment #</th>
+			<th>Rent</th>
 			<th>Image URL</th>
 			<th>Available Now</th>
 			<th>From</th>
@@ -70,7 +71,9 @@
 			 	<td>
 			 		<input type="number" th:value="101" name="apartmentNo" value="*{apartmentNo}" style="width: 160px">
 			 	</td>
-			 	
+			 	<td>
+			 		<input type="number" th:value="500" name="rent" value="*{rent}" style="width: 160px">
+			 	</td>
 			 	<td>
 			 		<input type="text" name="imageURL" th:field="*{imageURL}">
 			 	</td>
@@ -142,7 +145,10 @@
 			 		<input type="number" name="apartmentNo" value="*{apartmentNo}" 
 			 		style="width: 160px" th:value="${a.apartmentNo}">
 			 	</td>
-			 	
+			 	<td>
+			 		<input type="number" name="rent" value="*{rent}" 
+			 		style="width: 160px" th:value="${a.rent}">
+			 	</td>
 			 	<td>
 			 		<input type="text" name="imageURL" value="*{imageURL}" th:value="${a.imageURL}">
 			 	</td>
@@ -152,11 +158,13 @@
 			 	</td>
 			 	
 			 	<td>
-			 		<input type="date" name="rentFrom" value="*{rentFrom}" th:value="${#dates.format(a.rentFrom, 'yyyy-MM-dd')}" >
+<!-- 			 		<input type="date" name="rentFrom" value="*{rentFrom}" th:value="${#dates.format(a.rentFrom, 'yyyy-MM-dd')}" > -->
+			 		<input type="date" name="rentFrom" value="*{rentFrom}" th:value="${a.rentFrom}">
 			 	</td>
 			 	
 			 	<td>
-			 		<input type="date" name="rentTo" value="*{rent.To}" th:value="${#dates.format(a.rentTo, 'yyyy-MM-dd')}" >
+<!-- 			 		<input type="date" name="rentTo" value="*{rent.To}" th:value="${#dates.format(a.rentTo, 'yyyy-MM-dd')}" > -->
+					<input type="date" name="rentTo" value="*{rent.To}" th:value="${a.rentTo}">
 			 	</td>
 			 	
 			 	<!-- 
@@ -176,6 +184,12 @@
 	</div>
 	</table>
 	
+	<form method="get" th:action="@{/adminPage}">
+		<input type="submit" value="Back to Admin Page">
+	</form>
+	<form method="get" th:action="@{/}">
+		<input type="submit" value="Logout!">
+	</form>
 	
 
 </body>

@@ -29,6 +29,7 @@
 			<td th:text="${a.propertyManager}">Malek</td>
 			<td th:text="${a.rentFrom}">2020-04-10</td>
 			<td th:text="${a.rentTo}">2020-04-30</td>
+			<td th:text="${a.rent}">1250.0</td>
 			<td>
 				<form method ="post" th:action="@{/rentProcess}">
 					<input type="hidden" name = "myStr" th:value="${a.id}" value="${myStr}">

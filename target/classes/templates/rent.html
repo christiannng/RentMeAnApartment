@@ -15,7 +15,9 @@
 		<span style="display: in-line" th:text="${apt.street}"></span>
 		<span style="display: in-line" th:text="${apt.city}"></span>
 		<span style="display: in-line" th:text="${apt.province}"></span>
-		<span style="display: in-line" th:text="${apt.postalCode}"></span>		
+		<span style="display: in-line" th:text="${apt.postalCode}"></span><br>
+		The monthly rent for this Apt is: $		
+		<span style="display: in-line" th:text="${apt.rent}"></span>		
 		<br>
 		The rent start from 
 		<span style="display: in-line" th:text="${apt.rentFrom}"></span>
@@ -24,11 +26,17 @@
 		<br>
 		Your property manager is: 
 		<span style="display: in-line" th:text="${apt.propertyManager}"></span> <br>
-				
+		
+		
+	By clicking the button below, you agree to the terms above.<br>
+	<input type="hidden" name = "myStr" th:value="${apt.id}" value="${myStr}"> 		
+	<input type="hidden" name = "userId" th:value="${user.id}" value="${userId}"> 		
 		<input type="submit" value="Confirm Rent!">
 	</form>
 	
-	
+	<form method="get" th:action="@{/home}">
+		<input type="submit" value="Back to Homepage!">
+	</form>
 	<form method="get" th:action="@{/}">
 		<input type="submit" value="Logout!">
 	</form>

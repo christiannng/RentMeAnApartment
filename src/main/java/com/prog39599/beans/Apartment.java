@@ -1,6 +1,8 @@
 package com.prog39599.beans;
 
 
+
+import java.time.LocalDate;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -11,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -35,6 +38,9 @@ public class Apartment {
 	@NotEmpty
 	private String city;
 	
+	@NotNull
+	private Double rent;
+	
 	private String province;
 	
     //@Pattern(regexp = "[a-zA-Z][0-9][a-zA-Z][0-9][a-zA-Z][0-9]")
@@ -55,11 +61,13 @@ public class Apartment {
 	@Column(columnDefinition = "boolean default false")
 	private boolean approved;
 	
-	@Temporal(TemporalType.TIMESTAMP)
+	//@Temporal(TemporalType.TIMESTAMP)
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private Date rentFrom;
+	@Column(columnDefinition = "DATE")
+	private LocalDate rentFrom;
 	
-	@Temporal(TemporalType.TIMESTAMP)
+	//@Temporal(TemporalType.TIMESTAMP)
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private Date rentTo;
+	@Column(columnDefinition = "DATE")
+	private LocalDate   rentTo;
 }
