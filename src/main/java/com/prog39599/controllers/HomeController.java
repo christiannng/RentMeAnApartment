@@ -45,20 +45,9 @@ public class HomeController {
 	@GetMapping("/")
 	public String index(Model model, @ModelAttribute User user) {
 		currentUser = null;
-		//sendEmail("rentertest101@gmail.com", "Confirmaiton Email", "THIS IS TOTAL BS");
 		
 		return "index";
 	}
-
-	/*
-	 * @GetMapping("/") public String index(Model model, @ModelAttribute Apartment
-	 * apt) {
-	 * 
-	 * model.addAttribute("apartmentList", apartmentRepo.findAll()); return
-	 * "adminApartmentDB";
-	 * 
-	 * }
-	 */
 
 	@GetMapping("/registerNewAccount")
 	public String handleErrorRegister(Model model, @ModelAttribute User user) {
@@ -144,23 +133,6 @@ public class HomeController {
 		model.addAttribute("aptList", apartmentRepo.findByApprovedIsTrueOrderByStatus());
 		return "browse";
 	}
-	/*
-	@RequestMapping("/guestEmail")
-	public String guestEmail(Model model, @RequestParam String email) {
-		//might need to check for more things
-		if(email.isBlank()) {
-			model.addAttribute("error_email", "The email cannot be empty!");
-			model.addAttribute("user", currentUser);
-			model.addAttribute("apt", currentApt);
-			return "guestRent";
-		}
-		currentUser.setEmail(email);
-		currentUser = userRepo.save(currentUser);
-		model.addAttribute("apt", currentApt);
-		model.addAttribute("user", currentUser);
-		return "rent";
-	}
-	*/
 	
 	@RequestMapping("/user/proceedRent/guestEmail")
 	public String guestEmail(Model model, @RequestParam String guestEmail) {
@@ -191,7 +163,6 @@ public class HomeController {
 	@RequestMapping("/user/proceedRent/confirm")
 	public String confirm(Model model) {
 		
-		//making apt unavailable, we need to decide what
 		currentApt.setStatus(true);
 		currentApt = apartmentRepo.save(currentApt);
 		
@@ -213,66 +184,7 @@ public class HomeController {
 		return "receipt";
 	}
 	
-	/*
-	@RequestMapping("/rentProcess")
-	public String rentApt(Model model, @RequestParam String myStr) {
-		Optional<Apartment> aptSelected = apartmentRepo.findById(Long.parseLong(myStr));
-		currentApt = aptSelected.get();
-		
-		if (true)
-			System.out.println("");// will use an if here if we decide to list all then check availablility
-									// otherwise will remove it if we list only available in browse
-		if (currentUser == null) {
-			currentUser = User.builder().firstname("Guest").lastname(" ").build();
-			currentUser = userRepo.save(currentUser);
-			model.addAttribute("user", currentUser);
-			model.addAttribute("apt", currentApt);
-			return "guestRent";
-		}
-		model.addAttribute("apt", currentApt);
-		model.addAttribute("user", currentUser);
-
-		return "rent";
-	}
-	*/
-
-	/*
-	@GetMapping("/receipt")
-	public String receipt(Model model, @RequestParam String myStr, @RequestParam String userId) {
-		Optional<Apartment> aptSelected = apartmentRepo.findById(Long.parseLong(myStr));
-		currentApt = aptSelected.get(); //do i need to do this, pls remind to ask u
-		
-		Optional<User> userSelected = userRepo.findById(Long.parseLong(userId));
-		currentUser = userSelected.get(); //do i need to do this, pls remind to ask u
-		
-		String email, aptBooked;
-		//making apt unavailable, we need to decide what
-		currentApt.setAvailable(false);
-		currentApt.setStatus(false);
-		currentApt = apartmentRepo.save(currentApt);
-		email = currentUser.getEmail();
-		System.out.println("email is " + email);
-		aptBooked = "Hello " + currentUser.getFirstname() + ",\n\n" +
-					"You have booked this Apartment:\n" + 
-					"Apartment No: " +currentApt.getApartmentNo()+
-					"\nStreet: " +currentApt.getStreet()+
-					", City: " +currentApt.getCity()+
-					", Province: " +currentApt.getProvince()+
-					", Postal Code: " +currentApt.getPostalCode()+
-					"\n\n The rent will be: " +currentApt.getRent()+
-					"\n\n Your property manager will be: " +currentApt.getPropertyManager()+
-					"\n\n The period for the rent is from: " +currentApt.getRentFrom()+
-					" to " +currentApt.getRentTo()+
-					"\n\n Here is an image of the apartment:\n" + currentApt.getImageURL()+
-					"\n\nRegards,\n"+currentApt.getPropertyManager();
-					
-		
-		
-		sendEmail(email, "<Confirmaiton Email>",aptBooked);
-		model.addAttribute("user", currentUser);
-		return "receipt";
-	}
-*/
+	
 	@GetMapping("/login")
 	public String handleErrorTryToLogin(Model model, @ModelAttribute User user) {
 		return "index";
@@ -310,15 +222,12 @@ public class HomeController {
 
 		return "homepage";
 
-		/*
-		 * model.addAttribute("aptList", apartmentRepo.findAll()); return "browse";
-		 */
 	}
 	
 	@GetMapping("/adminPage")
 	public String adminPage() {
 		
-		return "admin"; //not sure if we need to pass anything here, remind me and delete comment
+		return "admin"; 
 	}
 	
 	
@@ -330,7 +239,6 @@ public class HomeController {
 
 	@PostMapping("/user/browse")
 	public String postBrowse(Model model) {
-		//model.addAttribute("aptList", apartmentRepo.findByStatusIsTrue());
 		
 		model.addAttribute("aptList", apartmentRepo.findByApprovedIsTrueOrderByStatus());
 		return "browse";
@@ -578,16 +486,6 @@ public class HomeController {
 			return "adminApartmentDB";
 		}
 
-		/*
-		 * if(currentUser == null) { return "index"; }
-		 * 
-		 * if(currentUser.getAccount().isAdmin()) { if(isAptValidated(apt))
-		 * model.addAttribute("movieList", apartmentRepo.findAll()); return
-		 * "adminMovieDB"; }
-		 * 
-		 * return "index";
-		 */
-
 	}
 
 	@PostMapping("/admin/database/apartment/update")
@@ -730,7 +628,6 @@ public class HomeController {
 		return generatedPassword;
 	}
 	private void sendEmail(String to, String subject, String body) {
-		// TODO Auto-generated method stub
 		System.out.println("Sending your message!");
 		SimpleMailMessage msg = new SimpleMailMessage();
 		msg.setTo(to);
