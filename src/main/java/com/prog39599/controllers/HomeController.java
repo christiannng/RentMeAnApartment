@@ -162,6 +162,7 @@ public class HomeController {
 			
 			model.addAttribute("apt", currentApt);
 			model.addAttribute("user", currentUser);
+			model.addAttribute("name", currentUser.getFirstname());
 
 			return "rent";
 		} else {
@@ -191,6 +192,7 @@ public class HomeController {
 			
 			sendEmail(email, "Confirmaiton Email For Your New Awesome Apartment", summaryApt(name));
 			
+			//model.addAttribute("name", name);
 			model.addAttribute("email", email);
 			return "receipt";
 		} else {
