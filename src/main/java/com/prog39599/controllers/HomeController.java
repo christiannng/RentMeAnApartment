@@ -150,7 +150,7 @@ public class HomeController {
 	}
 	
 	@RequestMapping("/user/proceedRent")
-	public String proceedRent(Model model, @RequestParam(defaultValue = "") String aptId) {
+	public String proceedRent(Model model, @RequestParam(defaultValue = "") String aptId, @ModelAttribute User user) {
 		if(currentApt != null) {
 			Optional<Apartment> aptSelected = apartmentRepo.findById(Long.parseLong(aptId));
 			currentApt = aptSelected.get();
@@ -171,7 +171,7 @@ public class HomeController {
 	}
 	
 	@RequestMapping("/user/proceedRent/confirm")
-	public String confirm(Model model) {
+	public String confirm(Model model, @ModelAttribute User user) {
 		if(currentApt != null) {
 			//making apt unavailable, we need to decide what
 			currentApt.setStatus(true);
