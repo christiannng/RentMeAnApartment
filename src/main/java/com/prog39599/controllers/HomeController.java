@@ -121,72 +121,87 @@ public class HomeController {
 		return "homepage";
 	}
 	
+	@PostMapping("/continueAsGuest")
+	public String countinueAsGuets(Model model, @ModelAttribute User user) {
+		currentUser = null;
+		model.addAttribute("aptList", apartmentRepo.findByApprovedIsTrueOrderByStatus());
+		return "browse";
+	}
+	
 	@GetMapping("/home")
 	public String homepage(Model model) {
 		model.addAttribute("user", currentUser); //added this for users to back out from confirm rent page
 		return "homepage";
 	}
-	@PostMapping("/continueAsGuest")
-	public String countinueAsGuets(Model model, @ModelAttribute User user) {
-		currentUser = null;
-		//model.addAttribute("aptList", apartmentRepo.findByStatusIsTrue());
-		model.addAttribute("aptList", apartmentRepo.findByApprovedIsTrueOrderByStatus());
-		return "browse";
-	}
 	
-	@RequestMapping("/user/proceedRent/guestEmail")
-	public String guestEmail(Model model, @RequestParam String guestEmail) {
-		HomeController.guestEmail = guestEmail;
-		model.addAttribute("apt", currentApt);
-		
-		if (currentUser == null) model.addAttribute("name", "Guest");
-		else model.addAttribute("name", currentUser.getFirstname());
-		return "rent";
+	@GetMapping("/user/proceedRent/guestEmail")
+	public String guestEmail(Model model, @RequestParam(defaultValue = "") String guestEmail, @ModelAttribute User user) {
+		if(currentApt != null) {
+			HomeController.guestEmail = guestEmail;
+			model.addAttribute("apt", currentApt);
+			
+			if (currentUser == null) model.addAttribute("name", "Guest");
+			else model.addAttribute("name", currentUser.getFirstname());
+			return "rent";
+		} else {
+			currentUser = null;
+			return "index";
+		}
 	}
 	
 	@RequestMapping("/user/proceedRent")
-	public String proceedRent(Model model, @RequestParam String aptId) {
-		Optional<Apartment> aptSelected = apartmentRepo.findById(Long.parseLong(aptId));
-		currentApt = aptSelected.get();
-		
-		if (currentUser == null) {
+	public String proceedRent(Model model, @RequestParam(defaultValue = "") String aptId) {
+		if(currentApt != null) {
+			Optional<Apartment> aptSelected = apartmentRepo.findById(Long.parseLong(aptId));
+			currentApt = aptSelected.get();
+			
+			if (currentUser == null) {
+				model.addAttribute("apt", currentApt);
+				return "guestRent";
+			}
+			
 			model.addAttribute("apt", currentApt);
-			return "guestRent";
+			model.addAttribute("user", currentUser);
+
+			return "rent";
+		} else {
+			currentUser = null;
+			return "index";
 		}
-		
-		model.addAttribute("apt", currentApt);
-		model.addAttribute("user", currentUser);
-		model.addAttribute("name", currentUser.getFirstname());
-		return "rent";
 	}
 	
 	@RequestMapping("/user/proceedRent/confirm")
 	public String confirm(Model model) {
+		if(currentApt != null) {
+			//making apt unavailable, we need to decide what
+			currentApt.setStatus(true);
+			currentApt = apartmentRepo.save(currentApt);
+			
+			String email, name;
+			if(currentUser != null) {
+				email = currentUser.getEmail();
+				name = currentUser.getFirstname();
+			}
+			else {
+				email = guestEmail;
+				name = "My Dear Friend!";
+			}
 		
-		currentApt.setStatus(true);
-		currentApt = apartmentRepo.save(currentApt);
-		
-		String email, name;
-		if(currentUser != null) {
-			email = currentUser.getEmail();
-			name = currentUser.getFirstname();
+			System.out.println("email is " + email);
+			
+			sendEmail(email, "Confirmaiton Email For Your New Awesome Apartment", summaryApt(name));
+			
+			model.addAttribute("email", email);
+			return "receipt";
+		} else {
+			currentUser = null;
+			return "index";
 		}
-		else {
-			email = guestEmail;
-			name = "My Dear Friend!";
-		}
-	
-		System.out.println("email is " + email);
-		
-		sendEmail(email, "Confirmaiton Email For Your New Awesome Apartment", summaryApt(name));
-		
-		model.addAttribute("email", email);
-		return "receipt";
 	}
-	
 	
 	@GetMapping("/login")
 	public String handleErrorTryToLogin(Model model, @ModelAttribute User user) {
+		currentUser = null;
 		return "index";
 	}
 
@@ -221,13 +236,17 @@ public class HomeController {
 		}
 
 		return "homepage";
-
 	}
 	
 	@GetMapping("/adminPage")
-	public String adminPage() {
-		
-		return "admin"; 
+	public String adminPage(Model model, @ModelAttribute User user) {
+		if(currentUser != null) {
+			if(currentUser.getAccount().isAdmin()) {
+				return "admin";
+			}
+		}
+		currentUser = null;
+		return "index";
 	}
 	
 	
@@ -239,7 +258,7 @@ public class HomeController {
 
 	@PostMapping("/user/browse")
 	public String postBrowse(Model model) {
-		
+		//model.addAttribute("aptList", apartmentRepo.findByStatusIsTrue());
 		model.addAttribute("aptList", apartmentRepo.findByApprovedIsTrueOrderByStatus());
 		return "browse";
 	}
@@ -341,6 +360,12 @@ public class HomeController {
 		return "index";
 	}
 
+	@GetMapping("/admin/database/user/update")
+	public String getUpdateUser(Model model, @ModelAttribute User user) {
+		currentUser = null;
+		return "index";
+	}
+	
 	@PostMapping("/admin/database/user/update")
 	public String updateUser(Model model, @ModelAttribute User user, @RequestParam String updatedUsername,
 			@RequestParam String updatedPassword, @RequestParam(defaultValue = "false") boolean updatedAdmin) {
@@ -366,7 +391,13 @@ public class HomeController {
 
 		return "index";
 	}
-
+	
+	@GetMapping("/admin/database/user/delete")
+	public String getDeleteUser(Model model, @RequestParam Long movieId, @ModelAttribute User user) {
+		currentUser = null;
+		return "index";
+	}
+	
 	@PostMapping("/admin/database/user/delete")
 	public String deleteUser(Model model, @RequestParam Long movieId) {
 		if (currentUser == null) {
@@ -455,6 +486,7 @@ public class HomeController {
 
 	@GetMapping("/admin/database/apartment")
 	public String queryMovieDbError(Model model, @ModelAttribute Apartment movie, @ModelAttribute User user) {
+		currentUser = null;
 		return "index";
 	}
 
@@ -472,7 +504,13 @@ public class HomeController {
 
 		return "index";
 	}
-
+	
+	@GetMapping("/admin/database/apartment/add")
+	public String getAddApt(Model model, @ModelAttribute User user) {
+		currentUser = null;
+		return "index";
+	}
+	
 	@PostMapping("/admin/database/apartment/add")
 	public String addApt(Model model, @ModelAttribute Apartment apt) {
 
@@ -485,9 +523,14 @@ public class HomeController {
 			model.addAttribute("apartmentList", apartmentRepo.findAll());
 			return "adminApartmentDB";
 		}
-
 	}
-
+	
+	@GetMapping("/admin/database/apartment/update")
+	public String getUpdateApt(Model model, @ModelAttribute User user) {
+		currentUser = null;
+		return "index";
+	}
+	
 	@PostMapping("/admin/database/apartment/update")
 	public String updateApt(Model model, @ModelAttribute Apartment apt,
 			@RequestParam(defaultValue = "false") boolean isAvailableNow, 
@@ -509,6 +552,12 @@ public class HomeController {
 		return "adminApartmentDB";
 	}
 
+	@GetMapping("/admin/database/apartment/delete")
+	public String getDeleteApt(Model model, @ModelAttribute User user) {
+		currentUser = null;
+		return "index";
+	}
+	
 	@PostMapping("/admin/database/apartment/delete")
 	public String deleteApt(Model model, @ModelAttribute Apartment apt, @RequestParam Long apartmentId) {
 		apartmentRepo.deleteById(apartmentId);
@@ -628,6 +677,7 @@ public class HomeController {
 		return generatedPassword;
 	}
 	private void sendEmail(String to, String subject, String body) {
+		// TODO Auto-generated method stub
 		System.out.println("Sending your message!");
 		SimpleMailMessage msg = new SimpleMailMessage();
 		msg.setTo(to);
