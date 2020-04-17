@@ -149,9 +149,9 @@ public class HomeController {
 		}
 	}
 	
-	@RequestMapping("/user/proceedRent")
+	@GetMapping("/user/proceedRent")
 	public String proceedRent(Model model, @RequestParam(defaultValue = "") String aptId, @ModelAttribute User user) {
-		if(currentApt != null) {
+		if(!aptId.equals("")) {
 			Optional<Apartment> aptSelected = apartmentRepo.findById(Long.parseLong(aptId));
 			currentApt = aptSelected.get();
 			
