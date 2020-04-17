@@ -2,7 +2,7 @@
 <html xmlns:th="https://www.thymeleaf.org">
 <head>
 <meta charset="ISO-8859-1">
-<title>Wellcome To Apartment Database page</title>
+<title>Welcome To Apartment Database page</title>
 <link href="../static/css/main.css" th:href="@{/css/main.css}" rel="stylesheet" />
 </head>
 <body>
@@ -167,20 +167,14 @@
 			 	</td>
 			 	
 			 	<td>
-<!-- 			 		<input type="date" name="rentFrom" value="*{rentFrom}" th:value="${#dates.format(a.rentFrom, 'yyyy-MM-dd')}" > -->
 			 		<input type="date" name="rentFrom" value="*{rentFrom}" th:value="${a.rentFrom}">
 			 	</td>
 			 	
 			 	<td>
-<!-- 			 		<input type="date" name="rentTo" value="*{rent.To}" th:value="${#dates.format(a.rentTo, 'yyyy-MM-dd')}" > -->
 					<input type="date" name="rentTo" value="*{rent.To}" th:value="${a.rentTo}">
 			 	</td>
 			 	
-			 	<!-- 
-			 	th:value="${a.rentTo}"
-			 	th:value="${a.rentFrom}" 
-			 	 -->
-			 	
+			 
 				<td><input type="submit" value="Update"></td>
 			</form>
 			
