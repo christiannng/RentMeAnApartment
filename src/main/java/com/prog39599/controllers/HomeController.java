@@ -149,26 +149,25 @@ public class HomeController {
 		}
 	}
 	
-	@GetMapping("/user/proceedRent")
-	public String getProceedRent(Model model, @ModelAttribute User user) {
-		currentUser = null;
-		return "index";
-	}
-	
-	@PostMapping("/user/proceedRent")
-	public String proceedRent(Model model, @RequestParam(defaultValue = "") String aptId) {
-		Optional<Apartment> aptSelected = apartmentRepo.findById(Long.parseLong(aptId));
-		currentApt = aptSelected.get();
-		
-		if (currentUser == null) {
+	@RequestMapping("/user/proceedRent")
+	public String proceedRent(Model model, @RequestParam(defaultValue = "") String aptId, @ModelAttribute User user) {
+		if(currentApt != null) {
+			Optional<Apartment> aptSelected = apartmentRepo.findById(Long.parseLong(aptId));
+			currentApt = aptSelected.get();
+			
+			if (currentUser == null) {
+				model.addAttribute("apt", currentApt);
+				return "guestRent";
+			}
+			
 			model.addAttribute("apt", currentApt);
-			return "guestRent";
-		}
-		
-		model.addAttribute("apt", currentApt);
-		model.addAttribute("user", currentUser);
+			model.addAttribute("user", currentUser);
 
-		return "rent";
+			return "rent";
+		} else {
+			currentUser = null;
+			return "index";
+		}
 	}
 	
 	@RequestMapping("/user/proceedRent/confirm")
